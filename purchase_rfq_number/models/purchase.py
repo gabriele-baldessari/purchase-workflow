@@ -2,14 +2,15 @@
 # © 2016 OpenSynergy Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-from openerp import models, api
+from odoo import models, api
 
 
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
-    @api.one
+    @api.multi
     def copy(self, default=None):
+        self.ensure_one()
         if default is None:
             default = {}
         default['name'] = '/'
@@ -23,8 +24,8 @@ class PurchaseOrder(models.Model):
         return super(PurchaseOrder, self).create(vals)
 
     @api.multi
-    def wkf_confirm_order(self):
-        if super(PurchaseOrder, self).wkf_confirm_order():
+    def button_confirm(self):
+        if super(PurchaseOrder, self).button_confirm():
             for purchase in self:
                 rfq = purchase.name
                 purchase.write({
